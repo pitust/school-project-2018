@@ -446,15 +446,11 @@
         toolbox: document.getElementById('toolbox')
       });
       Graph.workspace.clearUndo();
-      if (location.hash) {
-        Blockly.Xml.domToWorkspace(Graph.workspace, (new DOMParser()).parseFromString('<xml>' + atob(location.hash.substr(
-          1)) + '</xml>', 'text/xml').children[0]);
-      }else 
       Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
         Graph.workspace);
       Graph.workspace.addChangeListener(() => {
         code = (Blockly.JavaScript.workspaceToCode(Graph.workspace));
-        location.hash = '#' + btoa(Blockly.Xml.workspaceToDom(Graph.workspace).innerHTML);
+        //location.hash = '#' + btoa(Blockly.Xml.workspaceToDom(Graph.workspace).innerHTML);
       });
       // When Blockly changes, update the graph.
       Graph.resize();
