@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Graph</title>
+  <script src="jquery-3.3.1.min.js"></script>
+  <script src="blockly_compressed.js"></script>
+  <script src="blocks_compressed.js"></script>
+  <script src="javascript_compressed.js"></script>
+  <script src="msg/js/en.js"></script>
+  <script src="pievideo.js"></script>
+  <script src="pie-glfx.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    #funcText {
+      margin-top: 1em;
+      margin-left: 1.5em;
+      font-family: sans-serif;
+    }
+    #funcText>img {
+      height: 3px;
+      width: 15px;
+      vertical-align: middle;
+      margin-right: .5em;
+    }
+    #y1 {
+      background-color: #36c;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <tr>
+      <td>
+        <div id="visualization" style="width: 600px">
+            
+            <strong class="fps"></strong>
+            <canvas id="c1" width="600" height="400"></canvas>
+            <canvas id="c2" width="600" height="400"></canvas>
+            <video id="video" autoplay></video>
+            <div class="wait">W</div>
+            <style>
+            canvas:not(#c2),video{display:none;}
+            </style></div>
+      </td>
+      <td>
+        <div id="blocklyDiv" style="height: 400px"></div>
+      </td>
+    </tr>
+  </table>
+
+  <div id="funcText">
+    ...
+  </div>
+  <xml id="toolbox" style="display: none">
+    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+        <block type="controls_if"></block>
+        <block type="controls_if">
+          <mutation else="1"></mutation>
+        </block>
+        <block type="controls_if">
+          <mutation elseif="1" else="1"></mutation>
+        </block>
+        <block type="logic_compare"></block>
+        <block type="logic_operation"></block>
+        <block type="logic_negate"></block>
+        <block type="logic_boolean"></block>
+        <block type="logic_null"></block>
+        <block type="logic_ternary"></block>
+    </category>
+    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for">
+        <field name="VAR">i</field>
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+        <value name="BY">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_forEach"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category name="Math" colour="%{BKY_MATH_HUE}">
+      <block type="math_number">
+        <field name="NUM">123</field>
+      </block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+      <block type="math_trig"></block>
+      <block type="math_constant"></block>
+      <block type="math_number_property"></block>
+      <block type="math_round"></block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo"></block>
+      <block type="math_constrain">
+        <value name="LOW">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="HIGH">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">100</field>
+          </block>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+      <block type="math_atan2"></block>
+    </category>
+    <category name="Lists" colour="%{BKY_LISTS_HUE}">
+      <block type="lists_create_empty"></block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <block type="math_number">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf"></block>
+      <block type="lists_getIndex"></block>
+      <block type="lists_setIndex"></block>
+    </category>
+    <sep></sep>
+    <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}">
+    </category>
+    <category name="Functions" custom="PROCEDURE" colour="%{BKY_PROCEDURES_HUE}">
+    </category>
+    <category name="Inputs" colour="160">
+        <block type="graph_get_r"></block>
+        <block type="graph_get_g"></block>
+        <block type="graph_get_b"></block>
+        <block type="graph_get_x"></block>
+        <block type="graph_get_y"></block>
+      </category>
+    <sep></sep>
+  </xml>
+
+
+  <xml id="startBlocks" style="display: none">
+    <block type="graph_set_r" deletable="false" x="100" y="100">
+        <value name="VALUE">
+          <block type="math_arithmetic">
+            <field name="OP">POWER</field>
+            <value name="A">
+              <block type="graph_get_r"></block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="B">
+              <block type="math_number">
+                <field name="NUM">2</field>
+              </block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+      </block>
+      <block type="graph_set_g" deletable="false" x="100" y="160">
+        <value name="VALUE">
+          <block type="math_arithmetic">
+            <field name="OP">POWER</field>
+            <value name="A">
+              <block type="graph_get_r"></block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="B">
+              <block type="math_number">
+                <field name="NUM">2</field>
+              </block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+      </block>
+      <block type="graph_set_b" deletable="false" x="100" y="240">
+        <value name="VALUE">
+          <block type="math_arithmetic">
+            <field name="OP">POWER</field>
+            <value name="A">
+              <block type="graph_get_r"></block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+            <value name="B">
+              <block type="math_number">
+                <field name="NUM">2</field>
+              </block>
+              <shadow type="math_number">
+                <field name="NUM">1</field>
+              </shadow>
+            </value>
+          </block>
+        </value>
+      </block>
+  </xml>
+
+  <script>
+alert=function(x) {
+    console.error(new Error(x))
+}
+// Define the custom blocks and their JS generators.
+Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_get_r",
+  "message0": "r",
+  "output": "Number",
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+  "helpUrl": Blockly.Msg['VARIABLES_GET_HELPURL']
+}]);
+
+Blockly.JavaScript['graph_get_r'] = function(block) {
+  // r variable better.
+  return ['r', Blockly.JavaScript.ORDER_ATOMIC];
+};
+Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_get_g",
+  "message0": "g",
+  "output": "Number",
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+  "helpUgl": Blockly.Msg['VARIABLES_GET_HELPUgL']
+}]);
+
+Blockly.JavaScript['graph_get_g'] = function(block) {
+  // g variable getter.
+  return ['g', Blockly.JavaScript.ORDER_ATOMIC];
+};Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_get_x",
+  "message0": "x",
+  "output": "Number",
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+  "helpUgl": Blockly.Msg['VARIABLES_GET_HELPUgL']
+}]);
+
+Blockly.JavaScript['graph_get_x'] = function(block) {
+  // x variable getter.
+  return ['x', Blockly.JavaScript.ORDER_ATOMIC];
+};Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_get_y",
+  "message0": "y",
+  "output": "Number",
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+  "helpUgl": Blockly.Msg['VARIABLES_GET_HELPUgL']
+}]);
+
+Blockly.JavaScript['graph_get_y'] = function(block) {
+  // y variable getter.
+  return ['y', Blockly.JavaScript.ORDER_ATOMIC];
+};
+Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_get_b",
+  "message0": "b",
+  "output": "Number",
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
+  "helpUbl": Blockly.Msg['VARIABLES_GET_HELPUbL']
+}]);
+
+Blockly.JavaScript['graph_get_b'] = function(block) {
+  // b vabiable better.
+  return ['b', Blockly.JavaScript.ORDER_ATOMIC];
+};
+
+Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_set_r",
+  "message0": "r = %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "VALUE",
+      "check": "Number"
+    }
+  ],
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_SET_TOOLTIP'],
+  "helpUrl": Blockly.Msg['VARIABLES_SET_HELPURL']
+}]);
+
+Blockly.JavaScript['graph_set_r'] = function(block) {
+  // y variable setter.
+  var argument0 = Blockly.JavaScript.valueToCode(block, 'VALUE',
+      Blockly.JavaScript.ORDER_ASSIGNMENT) || '';
+  return 'r = ' + argument0 + ';';
+};Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_set_b",
+  "message0": "b = %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "VALUE",
+      "check": "Number"
+    }
+  ],
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_SET_TOOLTIP'],
+  "helpUrl": Blockly.Msg['VARIABLES_SET_HELPURL']
+}]);
+
+Blockly.JavaScript['graph_set_b'] = function(block) {
+  // y variable setter.
+  var argument0 = Blockly.JavaScript.valueToCode(block, 'VALUE',
+      Blockly.JavaScript.ORDER_ASSIGNMENT) || '';
+  return 'b = ' + argument0 + ';';
+};Blockly.defineBlocksWithJsonArray([{
+  "type": "graph_set_g",
+  "message0": "g = %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "VALUE",
+      "check": "Number"
+    }
+  ],
+  "colour": '160',
+  "tooltip": Blockly.Msg['VARIABLES_SET_TOOLTIP'],
+  "helpUrl": Blockly.Msg['VARIABLES_SET_HELPURL']
+}]);
+
+Blockly.JavaScript['graph_set_g'] = function(block) {
+  // y variable setter.
+  var argument0 = Blockly.JavaScript.valueToCode(block, 'VALUE',
+      Blockly.JavaScript.ORDER_ASSIGNMENT) || '';
+  return 'g = ' + argument0 + ';';
+};
+
+
+
+/**
+ * Create a namespace for the application.
+ */
+var Graph = {};
+
+/**
+ * Main Blockly workspace.
+ * @type {Blockly.WorkspaceSvg}
+ */
+Graph.workspace = null;
+
+/**
+ * Cached copy of the function string.
+ * @type {?string}
+ * @private
+ */
+Graph.oldFormula_ = null;
+
+/**
+ * Drawing options for the Chart API.
+ * @type {!Object}
+ * @private
+ */
+Graph.options_ = {
+  //curveType: 'function',
+  width: 600, height: 400,
+  chartArea: {left: '10%', width: '85%', height: '85%'}
+};
+
+/**
+ * Visualize the graph of y = f(x) using Google Chart Tools.
+ * For more documentation on Google Chart Tools, see this linechart example:
+ * https://developers.google.com/chart/interactive/docs/gallery/linechart
+ */
+ Graph.init = function() {
+  Graph.workspace = Blockly.inject('blocklyDiv',
+      {collapse: false,
+       disable: false,
+       media: 'media/',
+       toolbox: document.getElementById('toolbox')});
+  Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                             Graph.workspace);
+  Graph.workspace.clearUndo();
+  Graph.workspace.addChangeListener(()=>{
+  code=(Blockly.JavaScript.workspaceToCode(Graph.workspace));
+});
+  // When Blockly changes, update the graph.
+  Graph.resize();
+};
+Graph.resize = function() {
+  var width = Math.max(window.innerWidth - 440, 160);
+  document.getElementById('blocklyDiv').style.width = width + 'px';
+  Blockly.svgResize(Graph.workspace);
+};
+window.addEventListener('load', Graph.init);
+Graph.resize = function() {
+  var width = Math.max(window.innerWidth - 440, 250);
+  document.getElementById('blocklyDiv').style.width = width + 'px';
+  Blockly.svgResize(Graph.workspace);
+};
+window.addEventListener('resize',Graph.resize);
+var code = '';
+
+  </script>
+
+</body>
+</html>
