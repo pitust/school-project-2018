@@ -388,8 +388,9 @@ Blockly.JavaScript['graph_set_g'] = function(block) {
       Blockly.JavaScript.ORDER_ASSIGNMENT) || '';
   return 'g = ' + argument0 + ';';
 };
-
-
+if(location.hash) {
+  Blockly.Xml.domToWorkspace(Graph.workspace,(new DOMParser()).parseFromString('<xml>'+atob(location.hash.substr(1))+'</xml>','text/xml').children[0]);
+}
 
 /**
  * Create a namespace for the application.
@@ -436,6 +437,7 @@ Graph.options_ = {
   Graph.workspace.clearUndo();
   Graph.workspace.addChangeListener(()=>{
   code=(Blockly.JavaScript.workspaceToCode(Graph.workspace));
+  location.hash='#'+btoa(Blockly.Xml.workspaceToDom(Graph.workspace).innerHTML);
 });
   // When Blockly changes, update the graph.
   Graph.resize();
