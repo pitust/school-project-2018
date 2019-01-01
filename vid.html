@@ -10,6 +10,7 @@
   <script src="msg/js/en.js"></script>
   <script src="pievideo.js"></script>
   <script src="pie-glfx.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     body {
       background-color: #fff;
@@ -41,15 +42,21 @@
     <tr>
       <td>
         <div id="visualization" style="width: 600px">
-            
+            <i onclick="PieVideo.computeFrame()" class="fa fa-camera cambtn"></i>
             <strong class="fps"></strong>
             <canvas id="c1" width="600" height="400"></canvas>
             <canvas id="c2" width="600" height="400"></canvas>
             <video id="video" autoplay></video>
-            <div class="wait">W</div>
+            <div class="wait fa fa-spinner w3-spin"></div>
             <style>
             canvas:not(#c2),video{display:none;}
-            </style></div>
+            .wait {
+              display: none;
+            }
+            
+            .w3-spin{animation:w3-spin 2s infinite linear}@keyframes w3-spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}
+
+            </style></div><!--w3-sip taken from W3.CSS-->
       </td>
       <td>
         <div id="blocklyDiv" style="height: 400px"></div>
