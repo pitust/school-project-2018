@@ -23,22 +23,22 @@ let PieVideo = {
     var t = new Date;
     let worker;
     let cid = this.wid++;
-    $('#c2').fadeTo(200, 0.7);
+    
     $('.wait').fadeIn(0);
     this.ctx1.drawImage(this.video, 0, 0, 600, 400);
     let frame = this.ctx1.getImageData(0, 0, 600, 400);
     let l = frame.data.length / 4;
-    for (let i = 0; i < frame.data.l; i++) {
-      let sr = data.d[i * 4 + 0];
-      let sg = data.d[i * 4 + 1];
-      let sb = data.d[i * 4 + 2];
+    for (let i = 0; i < frame.data.length; i++) {
+      let sr = frame.data[i * 4 + 0];
+      let sg = frame.data[i * 4 + 1];
+      let sb = frame.data[i * 4 + 2];
       var x = i % 600;
       var y = Math.floor(i / 600);
       var {
         r,
         g,
         b
-      } = go(data.code, {
+      } = go(code, {
         r: sr,
         g: sg,
         b: sb,
@@ -59,7 +59,6 @@ let PieVideo = {
 
     $('#c2').fadeTo(0, 1);
     $('.wait').fadeOut(0);
-    worker.termiante();
   }
 };
 

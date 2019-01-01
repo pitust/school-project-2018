@@ -41,9 +41,9 @@
   <table>
     <tr>
       <td>
-        <div id="visualization" style="width: 600px">
-            <i onclick="PieVideo.computeFrame()" class="fa fa-camera cambtn"></i>
-            <strong class="fps"></strong>
+        <div id="visualization" style="width: 678px"><table><tr><td>
+            <i onclick="$('#c2').fadeTo(200, 0.7);setTimeout(PieVideo.computeFrame.bind(PieVideo),230);" class="fa fa-camera cambtn"></i>
+            </td><td><strong class="fps"></strong>
             <canvas id="c1" width="600" height="400"></canvas>
             <canvas id="c2" width="600" height="400"></canvas>
             <video id="video" autoplay></video>
@@ -53,10 +53,18 @@
             .wait {
               display: none;
             }
-            
+            .cambtn {
+              border-radius: 100%;
+              background: #36c;
+              padding:30px;
+              color:white;
+            }
+            .cambtn:active {
+              background: #224faa;
+            }
             .w3-spin{animation:w3-spin 2s infinite linear}@keyframes w3-spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}
 
-            </style></div><!--w3-sip taken from W3.CSS-->
+            </style></td></tr></table></div><!--w3-sip taken from W3.CSS-->
       </td>
       <td>
         <div id="blocklyDiv" style="height: 400px"></div>
