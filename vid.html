@@ -48,6 +48,7 @@
             <tr>
               <td>
                 <i onclick="$('#c2').fadeTo(200, 0.7);setTimeout(PieVideo.computeFrame.bind(PieVideo),230);" class="fa fa-camera cambtn"></i>
+                <i onclick="doUpload()" class="fa fa-upload upbtn"></i>
               </td>
               <td><strong class="fps"></strong>
                 <canvas id="c1" width="600" height="400"></canvas>
@@ -64,8 +65,14 @@
               background: #36c;
               padding:30px;
               color:white;
+            }           
+            .upbtn {
+              border-radius: 100%;
+              background: #36c;
+              padding:20px;
+              color:white;
             }
-            .cambtn:active {
+            .cambtn:active,.upbtn:active {
               background: #224faa;
             }
             .w3-spin{animation:w3-spin 2s infinite linear}@keyframes w3-spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}
