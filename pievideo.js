@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 let PieVideo = {
   timerCallback: function() {
     if (this.video.paused || this.video.ended) {
@@ -17,75 +18,79 @@ let PieVideo = {
     this.worq = [];
     this.wid = 1;
   },
-  computeFrame: function(dv=true) {
+  computeFrame: function(dv=true,alurl='') {
     $('.wait').fadeIn(0);
     if(dv)this.ctx1.drawImage(this.video, 0, 0, 600, 400);
-    sendXHR({base:this.c1.toDataURL('image/png'),code})
-    this.ctx2.putImageData(frame, 0, 0);
-
-    $('#c2').fadeTo(0, 1);
-    $('.wait').fadeOut(0);
+    sendXHR({base:dv?his.c1.toDataURL('image/png'):alurl,code});
   }
 };
-
+function dPX(px,i,w) {
+  var ii = i / 6;
+  var x = ii % w;
+  var y = Math.floor(ii/w);
+  return '#'+px.substr(i,6);
+}
+function getXY(i,w,h,tw,th) {
+  w = parseFloat(w)
+  h = parseFloat(h)
+  tw = parseFloat(tw)
+  th = parseFloat(th)
+  i /= 6
+  var x = i % w;
+  var y = Math.floor(i/w);
+  var wh = {w:tw / w,h:th / h};
+  wh.x = wh.w*x;
+  wh.y = wh.h*y;
+  return wh;
+}
 function go(__code__, {r, g, b, x, y}) {
   eval(__code__);
   return {r, g, b};
 }
 function sendXHR(data) {
   function onProgress(e) {
-    var percentComplete = e.position / e.totalSize * 100;
+    var percentComplete = e.position / e.tsotalSize * 100;
     console.log('%s%%', percentComplete);
   }
 
-  function onError(e) {
-    alert('Error while loading:' + e.target.status + '.');
+  var fd = new FormData()
+  for (var k in data) {
+    fd.append(k,data[k]);
   }
-  function urlencodeFormData(dt) {
-    var s = '';
-    function encode(s) {
-      return encodeURIComponent(s).replace(/%20/g, '+');
-    }
-    for (var k in dt) {
-      var pair = [k,dt[k]];
-      if (typeof pair[1] == 'string') {
-        s += (s ? '&' : '') + encode(pair[0]) + '=' + encode(pair[1]);
-      }
-    }
-    return s;
-  }
-
   var xhr = new XMLHttpRequest();
   xhr.onprogress = onProgress;
-  xhr.open('GET', '/api/parse', false);
-  xhr.onerror = onError;
-
-  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-  xhr.send(urlencodeFormData(data));
+  xhr.open('POST', '/api/parse', true);
+  xhr.responseType = 'blob';
+xhr.onreadystatechange = function () {
+  if (xhr.readyState == 4) {
+     if(xhr.status == 200) {
+      var url = URL.createObjectURL(xhr.response);
+      var img = document.createElement('img');
+      img.src=url;
+      document.getElementById('del').innerHTML='';
+      document.getElementById('del').append(img);
+      $('#c2').fadeTo(0, 1);
+      $('.wait').fadeOut(0);
+     }
+     else alert("Error parsing image\n");
+  }
+};
+  xhr.send(fd);
   if (xhr.status === 200) {
-    return xhr.responseText;
+    return xhr.response;
   }
   return null;
 }
 function readURL(input) {
   if (input.files && input.files[0]) {
-      var reader = new FileReader();
-
-      reader.onload = function (e) {
-        var ie = document.createElement('img');
-        ie.src=reader.result;
-          PieVideo.ctx1.drawImage(ie,0,0,600,400);
-          $('#c2').fadeTo(200, 0.7);
-          setTimeout(PieVideo.computeFrame.bind(PieVideo,false),230);
-      }
-
-      reader.readAsDataURL(input.files[0]);
+          $('#del').fadeTo(200, 0.7);
+          setTimeout(PieVideo.computeFrame.bind(PieVideo,false,input.files[0]),230);
   }
 }
 function doUpload() {
   var fi = document.createElement('input');
   fi.type='file';
-  fi.accept='image/*';
+  fi.accept='image/png';
   fi.click();
   fi.onchange=() => {
     readURL(fi);

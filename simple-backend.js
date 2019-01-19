@@ -1,85 +1,105 @@
+/* eslint-disable no-new-func */
 var http = require('http');
 var fs = require('fs');
-const {VM} = require('vm2');
- var PNG = require('pngjs').PNG;
-
-
-function parseUrlEncoded(ue) {
-    if (!ue)return {};
-    var keys = ue.split('&');var kvpairs = {};for(var ke of keys){if(ke==='')continue;var [k,v] = ke.split('=');kvpairs[k]=decodeURI(v).replace(/\+/g,' ');}
-    return kvpairs;
-  }
- function blah(req,res) {
-    fs.readFile('.' + req.url, function(err, data) {
-        if (err){
-            fs.readFile('.' + req.url + '/index.html', function(err, data) {
-                if (err) {
-                    res.writeHead(404, {'Content-Type': 'text/html'});
-                    res.write(`the file was not found.`);
-                    res.end()
-                }
-                res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write(data);
-                res.end();
-              });
-              return;
+const {VM,VMScript} = require('vm2');
+const vm = require('vm');
+var PNG = require('pngjs').PNG;
+var formidable = require('formidable');
+function blah(req, res) {
+  fs.readFile('.' + req.url, function(err, data) {
+    if (err) {
+      fs.readFile('.' + req.url + '/index.html', function(err, data) {
+        if (err) {
+          res.writeHead(404, {'Content-Type': 'text/html'});
+          res.write(`the file was not found.`);
+          res.end();
+          return;
         }
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write(data);
         res.end();
       });
- }
- 
-http.createServer(function (req, res) {
-  if (req.url != "/api/parse") blah(req,res);
-  else {
-    let body = '';
-    req.on('data', chunk => {
-        body += chunk.toString(); // convert Buffer to string
-    });
-    req.on('end', () => {
-        var {base,code} = parseUrlEncoded(body);code=atob(code);
-        base=base.replace('data:image/png;base64,', '').replace(/ /g,'+');
-        var data=atob(base);
-        var frame = PNG.sync.read(data);
-        for (let i = 0; i < frame.data.length; i++) {
-            let sr = frame.data[i * 4 + 0];
-            let sg = frame.data[i * 4 + 1];
-            let sb = frame.data[i * 4 + 2];
-            var x = i % 600;
-            var y = Math.floor(i / 600);
-            var {
-              r,
-              g,
-              b
-            } = go(code, {
-              r: sr,
-              g: sg,
-              b: sb,
-              x,
-              y,
-              i
-            });
-      
-            sr = r;
-            sg = g;
-            sb = b;
-      
-            frame.data[i * 4 + 0] = sr;
-            frame.data[i * 4 + 1] = sg;
-            frame.data[i * 4 + 2] = sb;
+      return;
+    }
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    res.end();
+  });
+}
+function atob(str) {
+  return Buffer.from(str, 'base64').toString('ascii');
+}
+function atobuf(str) {
+  return Buffer.from(str, 'base64');
+}
+const util = require('util');
+const multiparty = require('multiparty');
+http.createServer(function(req, res) {
+      console.log(req.url);
+      if (req.url != '/api/parse') blah(req, res);
+      else {
+        var form = new multiparty.Form();
+        var fp, fe = false, code = '', ce = false;
+        form.on('part', function(part) {
+          console.log('PART ce=%s fe=%s name=%s', ce, fe, part.name);
+          if (part.name == 'base') {
+            var path = './tmp/' + Math.random().toString();
+            fp = fs.createWriteStream(path);
+            part.pipe(fp);
+            fp = fs.createReadStream(path);
+            fe = true;
+          } else if (part.name == 'code') {
+            let chunk;
+            while (null !== (chunk = part.read())) {
+              code += chunk;
+            }
+            ce = true;
           }
-          res.writeHead(200,'OK',{'Content-Type':'text/plain'});
-          res.end(PNG.sync.write(png, {colorType:4}).toString('base64'));
-    });
-  }
-}).listen(8080);
-function go(code,data) {
-    const vm = new VM({
-        timeout: 1000,
-        sandbox: data
-    });
-    vm.run(code);
-    var {r,g,b} = vm.run('{r,g,b}');
-    return {r,g,b};
+          if (ce && fe) {
+            smart(fp, code, res);
+          }
+          part.resume();
+        })
+        form.parse(req);
+        /*form.parse(req, function (err, fields, files) {
+            console.log(files)
+    */
+      }
+    }).listen(8080);
+function smart(part_img, code_,res) {
+  console.log('SMART');
+  part_img.pipe(new PNG()).on('parsed', function() {
+    console.log('START');
+    let code = new Function('r','g','b','x','y',code_+';return {r,g,b};');
+    const accel = 1;
+    var t = new Date();
+    for (let i = 0; i < this.width; i+=accel) {
+      for (let j = 0; j < this.height; j+=accel) {
+        var n = i + j * this.width;
+        let sr = this.data[n * 4 + 0];
+        let sg = this.data[n * 4 + 1];
+        let sb = this.data[n * 4 + 2];
+        var {r, g, b} = code(sr, sg, sb, i, j);
+        this.data[n * 4 + 0] = r;
+        this.data[n * 4 + 1] = g;
+        this.data[n * 4 + 2] = b;
+      }
+      console.log(
+        'PIXEL: %s/%s (%s%%)', i+1,this.width,
+        Math.floor(i / (this.width / 100)))
+    }
+    res.writeHead(200, 'OK', {'Content-Type': 'image/png'});
+    var buffer = PNG.sync.write(this, {colorType:2});
+    res.end(buffer);
+    console.log("END");
+  });
+}
+function outb(byte,res) {
+    var b1 = byte.toString(16);
+    var b2v = b1.length==1?'0':'' + b1;
+    res.write(b2v);
+}
+function go(code, dat) {
+  code.runInNewContext(dat);
+  return dat;
 }

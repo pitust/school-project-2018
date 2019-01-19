@@ -1,7 +1,4 @@
 window.onload = function() {
-
-    window.ctx2 = document.getElementById('c2').getContext('2d');
- 
 var c3 = document.createElement('canvas');
 c3.width="400";
 c3.height="400";
@@ -21,6 +18,6 @@ const constraints = {
   
   navigator.mediaDevices.getUserMedia(constraints).
     then((stream) => {video.srcObject = stream;});
-PieVideo.doLoad(ctx2);
+PieVideo.doLoad();
 
 };

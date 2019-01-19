@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/pitust/school-project-2018#readme",
   "dependencies": {
+    "formidable": "^1.2.1",
+    "multiparty": "^4.2.1",
     "pngjs": "^3.3.3",
     "vm2": "^3.6.6"
   }
