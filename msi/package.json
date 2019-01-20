@@ -1,0 +1,27 @@
+{
+  "name": "school-project-2018",
+  "version": "1.0.0",
+  "description": "To build it:\r ```sh\r cd path/to/this/repo\r go build\r ```\r To run it:\r ```sh\r path/to/the/executable -p<whatever port you want to have>\r ```\r This project uses FontAwesome v4.7.0 and w3.css for:\r  - spinner",
+  "main": "vid.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pitust/school-project-2018.git"
+  },
+  "author": "Piotr Stelmaszek",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/pitust/school-project-2018/issues"
+  },
+  "homepage": "https://github.com/pitust/school-project-2018#readme",
+  "dependencies": {
+    "formidable": "^1.2.1",
+    "multiparty": "^4.2.1",
+    "opn": "^5.4.0",
+    "pngjs": "^3.3.3",
+    "read-all-stream": "^3.1.0",
+    "vm2": "^3.6.6"
+  }
+}
