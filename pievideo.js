@@ -21,7 +21,13 @@ let PieVideo = {
   computeFrame: function(dv = true, alurl = '') {
     $('.wait').fadeIn(0);
     if (dv) this.ctx1.drawImage(this.video, 0, 0, 600, 400);
-    sendXHR({base: dv ? his.c1.toDataURL('image/png') : alurl, code});
+    if (dv) {
+      sendXHR({base: alurl, code});
+    } else {
+      this.c1.toBlob(function(blob) {
+        sendXHR({base: blob, code});
+      },'image/png')
+    }
   }
 };
 function dPX(px, i, w) {
@@ -42,6 +48,29 @@ function getXY(i, w, h, tw, th) {
   wh.x = wh.w * x;
   wh.y = wh.h * y;
   return wh;
+}
+function b64toBlob(b64Data, contentType, sliceSize) {
+  contentType = contentType || '';
+  sliceSize = sliceSize || 512;
+
+  var byteCharacters = atob(b64Data);
+  var byteArrays = [];
+
+  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    var byteNumbers = new Array(slice.length);
+    for (var i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    var byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  var blob = new Blob(byteArrays, {type: contentType});
+  return blob;
 }
 function go(__code__, {r, g, b, x, y}) {
   eval(__code__);
