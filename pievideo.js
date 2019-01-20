@@ -76,8 +76,8 @@ function sendXHR(data) {
               confirmButtonText: 'Save it!',
               cancelButtonText: 'OK!',
               showCancelButton: true
-            })
-            .then(saveornot => {
+            }).
+            then(saveornot => {
               if (saveornot.value == true) {
                 saveAs(xhr.response, 'your-masterpiece.png');
               }
@@ -85,8 +85,7 @@ function sendXHR(data) {
 
         $('#c2').fadeTo(0, 1);
         $('.wait').fadeOut(0);
-      } else
-        alert('Error parsing image\n');
+      } else alert('Error parsing image\n');
     }
   };
   xhr.send(fd);

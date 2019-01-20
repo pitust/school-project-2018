@@ -37,8 +37,7 @@ const multiparty = require('multiparty');
 var read = require('read-all-stream');
 http.createServer(function(req, res) {
       console.log(req.url);
-      if (req.url != '/api/parse')
-        blah(req, res);
+      if (req.url != '/api/parse') blah(req, res);
       else {
         var form = new multiparty.Form();
         var fp, fe = false, code = '', ce = false;
@@ -71,8 +70,8 @@ http.createServer(function(req, res) {
             console.log(files)
     */
       }
-    })
-    .listen(8080);
+    }).
+    listen(8080);
 function smart(part_img, code_, res) {
   console.log('SMART');
   part_img.pipe(new PNG()).on('parsed', function() {
