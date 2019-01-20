@@ -1,7 +1,7 @@
 /* eslint-disable no-new-func */
 var http = require('http');
 var fs = require('fs');
-const {VM,VMScript} = require('vm2');
+const {VM, VMScript} = require('vm2');
 const vm = require('vm');
 var PNG = require('pngjs').PNG;
 var formidable = require('formidable');
@@ -37,7 +37,8 @@ const multiparty = require('multiparty');
 var read = require('read-all-stream');
 http.createServer(function(req, res) {
       console.log(req.url);
-      if (req.url != '/api/parse') blah(req, res);
+      if (req.url != '/api/parse')
+        blah(req, res);
       else {
         var form = new multiparty.Form();
         var fp, fe = false, code = '', ce = false;
@@ -51,7 +52,7 @@ http.createServer(function(req, res) {
             part.resume();
             fe = true;
           } else if (part.name == 'code') {
-            read(part).then(function (data) {
+            read(part).then(function(data) {
               console.log(data);
               code = data;
               part.resume();
@@ -70,17 +71,19 @@ http.createServer(function(req, res) {
             console.log(files)
     */
       }
-    }).listen(8080);
-function smart(part_img, code_,res) {
+    })
+    .listen(8080);
+function smart(part_img, code_, res) {
   console.log('SMART');
   part_img.pipe(new PNG()).on('parsed', function() {
     console.log('START');
     console.log(code_ + ';return {r,g,b};')
-    let code = new Function('r','g','b','x','y',code_+';return {r,g,b};');
+    let code =
+        new Function('r', 'g', 'b', 'x', 'y', code_ + ';return {r,g,b};');
     const accel = 1;
     var t = new Date();
-    for (let i = 0; i < this.width; i+=accel) {
-      for (let j = 0; j < this.height; j+=accel) {
+    for (let i = 0; i < this.width; i += accel) {
+      for (let j = 0; j < this.height; j += accel) {
         var n = i + j * this.width;
         let sr = this.data[n * 4 + 0];
         let sg = this.data[n * 4 + 1];
@@ -91,19 +94,19 @@ function smart(part_img, code_,res) {
         this.data[n * 4 + 2] = b;
       }
       console.log(
-        'PIXEL: %s/%s (%s%%)', i+1,this.width,
-        Math.floor(i / (this.width / 100)))
+          'PIXEL: %s/%s (%s%%)', i + 1, this.width,
+          Math.floor(i / (this.width / 100)))
     }
     res.writeHead(200, 'OK', {'Content-Type': 'image/png'});
-    var buffer = PNG.sync.write(this, {colorType:2});
+    var buffer = PNG.sync.write(this, {colorType: 2});
     res.end(buffer);
-    console.log("END");
+    console.log('END');
   });
 }
-function outb(byte,res) {
-    var b1 = byte.toString(16);
-    var b2v = b1.length==1?'0':'' + b1;
-    res.write(b2v);
+function outb(byte, res) {
+  var b1 = byte.toString(16);
+  var b2v = b1.length == 1 ? '0' : '' + b1;
+  res.write(b2v);
 }
 function go(code, dat) {
   code.runInNewContext(dat);

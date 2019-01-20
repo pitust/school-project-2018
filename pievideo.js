@@ -18,29 +18,29 @@ let PieVideo = {
     this.worq = [];
     this.wid = 1;
   },
-  computeFrame: function(dv=true,alurl='') {
+  computeFrame: function(dv = true, alurl = '') {
     $('.wait').fadeIn(0);
-    if(dv)this.ctx1.drawImage(this.video, 0, 0, 600, 400);
-    sendXHR({base:dv?his.c1.toDataURL('image/png'):alurl,code});
+    if (dv) this.ctx1.drawImage(this.video, 0, 0, 600, 400);
+    sendXHR({base: dv ? his.c1.toDataURL('image/png') : alurl, code});
   }
 };
-function dPX(px,i,w) {
+function dPX(px, i, w) {
   var ii = i / 6;
   var x = ii % w;
-  var y = Math.floor(ii/w);
-  return '#'+px.substr(i,6);
+  var y = Math.floor(ii / w);
+  return '#' + px.substr(i, 6);
 }
-function getXY(i,w,h,tw,th) {
+function getXY(i, w, h, tw, th) {
   w = parseFloat(w)
   h = parseFloat(h)
   tw = parseFloat(tw)
   th = parseFloat(th)
   i /= 6
   var x = i % w;
-  var y = Math.floor(i/w);
-  var wh = {w:tw / w,h:th / h};
-  wh.x = wh.w*x;
-  wh.y = wh.h*y;
+  var y = Math.floor(i / w);
+  var wh = {w: tw / w, h: th / h};
+  wh.x = wh.w * x;
+  wh.y = wh.h * y;
   return wh;
 }
 function go(__code__, {r, g, b, x, y}) {
@@ -55,39 +55,40 @@ function sendXHR(data) {
 
   var fd = new FormData()
   for (var k in data) {
-    fd.append(k,data[k]);
+    fd.append(k, data[k]);
   }
   var xhr = new XMLHttpRequest();
   xhr.onprogress = onProgress;
   xhr.open('POST', '/api/parse', true);
   xhr.responseType = 'blob';
-xhr.onreadystatechange = function () {
-  if (xhr.readyState == 4) {
-     if(xhr.status == 200) {
-      var url = URL.createObjectURL(xhr.response);
-      Swal.fire({
-        imageUrl: url,
-        imageHeight: 400,
-        imageAlt: 'A tall image',
-        title:'Your image has been generated',
-        type:'success',
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Save it!',
-        cancelButtonText: 'OK!',
-        showCancelButton: true
-      }).then(saveornot => {
-        if(saveornot.value == true) {
-          saveAs(xhr.response,'your-masterpiece.png');
-        }
-      })
-      
-      $('#c2').fadeTo(0, 1);
-      $('.wait').fadeOut(0);
-     }
-     else alert("Error parsing image\n");
-  }
-};
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        var url = URL.createObjectURL(xhr.response);
+        Swal.fire({
+              imageUrl: url,
+              imageHeight: 400,
+              imageAlt: 'A tall image',
+              title: 'Your image has been generated',
+              type: 'success',
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'Save it!',
+              cancelButtonText: 'OK!',
+              showCancelButton: true
+            })
+            .then(saveornot => {
+              if (saveornot.value == true) {
+                saveAs(xhr.response, 'your-masterpiece.png');
+              }
+            })
+
+        $('#c2').fadeTo(0, 1);
+        $('.wait').fadeOut(0);
+      } else
+        alert('Error parsing image\n');
+    }
+  };
   xhr.send(fd);
   if (xhr.status === 200) {
     return xhr.response;
@@ -96,16 +97,17 @@ xhr.onreadystatechange = function () {
 }
 function readURL(input) {
   if (input.files && input.files[0]) {
-          $('#del').fadeTo(200, 0.7);
-          setTimeout(PieVideo.computeFrame.bind(PieVideo,false,input.files[0]),230);
+    $('#del').fadeTo(200, 0.7);
+    setTimeout(
+        PieVideo.computeFrame.bind(PieVideo, false, input.files[0]), 230);
   }
 }
 function doUpload() {
   var fi = document.createElement('input');
-  fi.type='file';
-  fi.accept='image/png';
+  fi.type = 'file';
+  fi.accept = 'image/png';
   fi.click();
-  fi.onchange=() => {
+  fi.onchange = () => {
     readURL(fi);
   }
 }
