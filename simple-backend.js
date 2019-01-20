@@ -34,6 +34,7 @@ function atobuf(str) {
 }
 const util = require('util');
 const multiparty = require('multiparty');
+var read = require('read-all-stream');
 http.createServer(function(req, res) {
       console.log(req.url);
       if (req.url != '/api/parse') blah(req, res);
@@ -47,18 +48,22 @@ http.createServer(function(req, res) {
             fp = fs.createWriteStream(path);
             part.pipe(fp);
             fp = fs.createReadStream(path);
+            part.resume();
             fe = true;
           } else if (part.name == 'code') {
-            let chunk;
-            while (null !== (chunk = part.read())) {
-              code += chunk;
-            }
-            ce = true;
+            read(part).then(function (data) {
+              console.log(data);
+              code = data;
+              part.resume();
+              ce = true;
+              if (ce && fe) {
+                smart(fp, code, res);
+              }
+            });
           }
           if (ce && fe) {
             smart(fp, code, res);
           }
-          part.resume();
         })
         form.parse(req);
         /*form.parse(req, function (err, fields, files) {
@@ -70,6 +75,7 @@ function smart(part_img, code_,res) {
   console.log('SMART');
   part_img.pipe(new PNG()).on('parsed', function() {
     console.log('START');
+    console.log(code_ + ';return {r,g,b};')
     let code = new Function('r','g','b','x','y',code_+';return {r,g,b};');
     const accel = 1;
     var t = new Date();

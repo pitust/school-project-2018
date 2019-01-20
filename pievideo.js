@@ -65,10 +65,23 @@ xhr.onreadystatechange = function () {
   if (xhr.readyState == 4) {
      if(xhr.status == 200) {
       var url = URL.createObjectURL(xhr.response);
-      var img = document.createElement('img');
-      img.src=url;
-      document.getElementById('del').innerHTML='';
-      document.getElementById('del').append(img);
+      Swal.fire({
+        imageUrl: url,
+        imageHeight: 400,
+        imageAlt: 'A tall image',
+        title:'Your image has been generated',
+        type:'success',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Save it!',
+        cancelButtonText: 'OK!',
+        showCancelButton: true
+      }).then(saveornot => {
+        if(saveornot.value == true) {
+          saveAs(xhr.response,'your-masterpiece.png');
+        }
+      })
+      
       $('#c2').fadeTo(0, 1);
       $('.wait').fadeOut(0);
      }
