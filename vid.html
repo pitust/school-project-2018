@@ -45,7 +45,7 @@
   <table>
     <tr>
       <td>
-        <div id="visualization" style="width: 678px">
+        <div id="visualization">
           <table>
             <tr>
               <td>
@@ -464,14 +464,9 @@
       // When Blockly changes, update the graph.
       Graph.resize();
     };
-    Graph.resize = function () {
-      var width = Math.max(window.innerWidth - 680, 160);
-      document.getElementById('blocklyDiv').style.width = width + 'px';
-      Blockly.svgResize(Graph.workspace);
-    };
     window.addEventListener('load', Graph.init);
     Graph.resize = function () {
-      var width = Math.max(window.innerWidth - 440, 250);
+      var width = Math.max(window.innerWidth - 146, 250);
       document.getElementById('blocklyDiv').style.width = width + 'px';
       Blockly.svgResize(Graph.workspace);
     };
