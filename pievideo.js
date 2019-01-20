@@ -21,7 +21,7 @@ let PieVideo = {
   computeFrame: function(dv = true, alurl = '') {
     $('.wait').fadeIn(0);
     if (dv) this.ctx1.drawImage(this.video, 0, 0, 600, 400);
-    if (dv) {
+    if (!dv) {
       sendXHR({base: alurl, code});
     } else {
       this.c1.toBlob(function(blob) {
