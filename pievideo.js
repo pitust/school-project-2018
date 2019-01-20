@@ -17,6 +17,10 @@ let PieVideo = {
     this.topLimit = 20;
     this.worq = [];
     this.wid = 1;
+    if (location.hash) {
+      var d = location.hash.substr(1)
+      getAPI(d);
+    }
   },
   computeFrame: function(dv = true, alurl = '') {
     $('.wait').fadeIn(0);
@@ -76,18 +80,16 @@ function go(__code__, {r, g, b, x, y}) {
   eval(__code__);
   return {r, g, b};
 }
+var examples = [
+  'eg1-monochrom',
+  'eg2-colordepth'
+]
 function sendXHR(data) {
-  function onProgress(e) {
-    var percentComplete = e.position / e.tsotalSize * 100;
-    console.log('%s%%', percentComplete);
-  }
-
   var fd = new FormData()
   for (var k in data) {
     fd.append(k, data[k]);
   }
   var xhr = new XMLHttpRequest();
-  xhr.onprogress = onProgress;
   xhr.open('POST', '/api/parse', true);
   xhr.responseType = 'blob';
   xhr.onreadystatechange = function() {
@@ -118,6 +120,27 @@ function sendXHR(data) {
     }
   };
   xhr.send(fd);
+  if (xhr.status === 200) {
+    return xhr.response;
+  }
+  return null;
+}
+
+function getAPI(nm) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/api/data/' + nm, true);
+  xhr.responseType = 'document';
+  xhr.overrideMimeType('text/xml');
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        Graph.workspace.clear();
+        console.log(xhr);
+        Blockly.Xml.domToWorkspace(xhr.responseXML.firstChild,Graph.workspace);
+      }
+    }
+  };
+  xhr.send();
   if (xhr.status === 200) {
     return xhr.response;
   }
