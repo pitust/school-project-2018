@@ -1,6 +1,6 @@
 {
   "name": "school-project-2018",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "To build it:\r ```sh\r cd path/to/this/repo\r go build\r ```\r To run it:\r ```sh\r path/to/the/executable -p<whatever port you want to have>\r ```\r This project uses FontAwesome v4.7.0 and w3.css for:\r  - spinner",
   "main": "vid.html",
   "scripts": {
