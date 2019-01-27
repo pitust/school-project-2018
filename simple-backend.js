@@ -134,17 +134,34 @@ function smart(part_img, code_, res) {
   console.log('SMART');
   part_img.pipe(new PNG()).on('parsed', function() {
     console.log('START');
+    let n;
+    let self = this;
+    function getRAtXY(x,y) {
+      var loc = x + y * self.width;
+      return self.data[n * 4 + loc]
+    }
+    function getGAtXY(x,y) {
+      var loc = x + y * self.width;
+      return self.data[n * 4 + loc + 1]
+    }
+    function getBAtXY(x,y) {
+      var loc = x + y * self.width;
+      return self.data[n * 4 + loc + 2]
+    }
     let code =
-        new Function('r', 'g', 'b', 'x', 'y', code_+'return {r,g,b};');
+        new Function('r', 'g', 'b', 'x', 'y','getRAtXY','getGAtXY','getBAtXY', code_+'return {r,g,b};');
     const accel = 1;
     var t = new Date();
     for (let i = 0; i < this.width; i += accel) {
       for (let j = 0; j < this.height; j += accel) {
-        var n = i + j * this.width;
+        n = i + j * this.width;
         let sr = this.data[n * 4 + 0];
         let sg = this.data[n * 4 + 1];
         let sb = this.data[n * 4 + 2];
-        var {r, g, b} = code(sr, sg, sb, i, j);
+        var {r, g, b} = code(sr, sg, sb, i, j,getRAtXY,getGAtXY,getBAtXY);
+        if (sr != r || sg != g || sb != b) {
+          this.data[n * 4 + 3] = 255;
+        }
         this.data[n * 4 + 0] = r;
         this.data[n * 4 + 1] = g;
         this.data[n * 4 + 2] = b;
@@ -154,17 +171,8 @@ function smart(part_img, code_, res) {
           Math.floor(i / (this.width / 100)))
     }
     res.writeHead(200, 'OK', {'Content-Type': 'image/png'});
-    var buffer = PNG.sync.write(this, {colorType: 2});
+    var buffer = PNG.sync.write(this, {colorType: 6});
     res.end(buffer);
     console.log('END');
   });
-}
-function outb(byte, res) {
-  var b1 = byte.toString(16);
-  var b2v = b1.length == 1 ? '0' : '' + b1;
-  res.write(b2v);
-}
-function go(code, dat) {
-  code.runInNewContext(dat);
-  return dat;
 }

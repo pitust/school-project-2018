@@ -52,7 +52,7 @@
         "curly": "off",
         "default-case": "off",
         "dot-location": [
-            "error",
+            "off",
             "object"
         ],
         "dot-notation": "off",
@@ -203,7 +203,7 @@
         "no-shadow-restricted-names": "error",
         "no-spaced-func": "error",
         "no-sync": "off",
-        "no-tabs": "error",
+        "no-tabs": "off",
         "no-template-curly-in-string": "error",
         "no-ternary": "off",
         "no-throw-literal": "off",
@@ -234,7 +234,7 @@
         "no-warning-comments": "error",
         "no-whitespace-before-property": "error",
         "no-with": "error",
-        "nonblock-statement-body-position": "error",
+        "nonblock-statement-body-position": "off",
         "object-curly-newline": "error",
         "object-curly-spacing": [
             "error",

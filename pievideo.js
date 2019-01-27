@@ -30,7 +30,7 @@ let PieVideo = {
     } else {
       this.c1.toBlob(function(blob) {
         sendXHR({base: blob, code});
-      },'image/png')
+      }, 'image/png')
     }
   }
 };
@@ -80,10 +80,7 @@ function go(__code__, {r, g, b, x, y}) {
   eval(__code__);
   return {r, g, b};
 }
-var examples = [
-  'eg1-monochrom',
-  'eg2-colordepth'
-]
+var examples = ['eg1-monochrom', 'eg2-colordepth'];
 function sendXHR(data) {
   var fd = new FormData()
   for (var k in data) {
@@ -107,8 +104,8 @@ function sendXHR(data) {
               confirmButtonText: 'Save it!',
               cancelButtonText: 'OK!',
               showCancelButton: true
-            }).
-            then(saveornot => {
+            })
+            .then(saveornot => {
               if (saveornot.value == true) {
                 saveAs(xhr.response, 'your-masterpiece.png');
               }
@@ -116,7 +113,8 @@ function sendXHR(data) {
 
         $('#c2').fadeTo(0, 1);
         $('.wait').fadeOut(0);
-      } else alert('Error parsing image\n');
+      } else
+        alert('Error parsing image\n');
     }
   };
   xhr.send(fd);
@@ -136,7 +134,7 @@ function getAPI(nm) {
       if (xhr.status == 200) {
         Graph.workspace.clear();
         console.log(xhr);
-        Blockly.Xml.domToWorkspace(xhr.responseXML.firstChild,Graph.workspace);
+        Blockly.Xml.domToWorkspace(xhr.responseXML.firstChild, Graph.workspace);
       }
     }
   };
@@ -145,15 +143,14 @@ function getAPI(nm) {
     return xhr.response;
   }
   return null;
-}
-function readURL(input) {
+} function readURL(input) {
   if (input.files && input.files[0]) {
     $('#del').fadeTo(200, 0.7);
     setTimeout(
         PieVideo.computeFrame.bind(PieVideo, false, input.files[0]), 230);
   }
-}
-function doUpload() {
+} function
+doUpload() {
   var fi = document.createElement('input');
   fi.type = 'file';
   fi.accept = 'image/png';
@@ -161,4 +158,8 @@ function doUpload() {
   fi.onchange = () => {
     readURL(fi);
   }
+} function
+getLocal() {
+  var blob = new Blob([Blockly.Xml.workspaceToDom(Graph.workspace).outerHTML]);
+  saveAs(blob, 'code.ies');
 }

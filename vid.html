@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 
 <head>
   <meta charset="utf-8">
@@ -51,6 +51,7 @@
               <td>
                 <i onclick="$('#c2').fadeTo(200, 0.7);setTimeout(PieVideo.computeFrame.bind(PieVideo),230);" class="fa fa-camera cambtn"></i>
                 <i onclick="doUpload()" class="fa fa-upload cambtn"></i>
+                <i onclick="getLocal()" class="fa fa-download cambtn"></i>
                 <i class="fa fa-external-link cambtn" onclick="location.href='/examples'"></i>
               </td>
               <td><strong class="fps"></strong>
@@ -197,7 +198,6 @@
       <block type="lists_getIndex"></block>
       <block type="lists_setIndex"></block>
     </category>
-    <sep></sep>
     <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}">
     </category>
     <category name="Functions" custom="PROCEDURE" colour="%{BKY_PROCEDURES_HUE}">
@@ -208,6 +208,9 @@
       <block type="graph_get_b"></block>
       <block type="graph_get_x"></block>
       <block type="graph_get_y"></block>
+      <block type="around_r"></block>
+      <block type="around_g"></block>
+      <block type="around_b"></block>
     </category>
     <sep></sep>
   </xml>
@@ -305,7 +308,60 @@
       "tooltip": Blockly.Msg['VARIABLES_GET_TOOLTIP'],
       "helpUgl": Blockly.Msg['VARIABLES_GET_HELPUgL']
     }]);
-
+    Blockly.Blocks['around_r'] = {
+      init: function () {
+        this.appendDummyInput()
+          .appendField("red at x=")
+          .appendField(new Blockly.FieldTextInput("0"), "xm")
+          .appendField("y=")
+          .appendField(new Blockly.FieldTextInput("0"), "ym");
+          this.setOutput(true);
+        this.setColour(240);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+    Blockly.Blocks['around_g'] = {
+      init: function () {
+        this.appendDummyInput()
+          .appendField("green at x=")
+          .appendField(new Blockly.FieldTextInput("0"), "xm")
+          .appendField("y=")
+          .appendField(new Blockly.FieldTextInput("0"), "ym");
+          this.setOutput(true);
+        this.setColour(240);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+    Blockly.JavaScript['around_g'] = function (block) {
+      var text_xm = block.getFieldValue('xm');
+      var text_ym = block.getFieldValue('ym');
+      return ['getGAtXY(' + text_xm + ',' + text_ym + ')',Blockly.JavaScript.ORDER_FUNCTION_CALL];
+    };
+    Blockly.Blocks['around_b'] = {
+      init: function () {
+        this.appendDummyInput()
+          .appendField("blue at x=")
+          .appendField(new Blockly.FieldTextInput("0"), "xm")
+          .appendField("y=")
+          .appendField(new Blockly.FieldTextInput("0"), "ym");
+        this.setColour(240);
+        this.setTooltip("");
+        this.setOutput(true);
+        this.setHelpUrl("");
+      }
+    };
+    Blockly.JavaScript['around_b'] = function (block) {
+      var text_xm = block.getFieldValue('xm');
+      var text_ym = block.getFieldValue('ym');
+        return ['getBAtXY(' + text_xm + ',' + text_ym + ')',Blockly.JavaScript.ORDER_FUNCTION_CALL];
+    };
+    Blockly.JavaScript['around_r'] = function (block) {
+      var text_xm = block.getFieldValue('xm');
+      var text_ym = block.getFieldValue('ym');
+      return ['getRAtXY(' + text_xm + ',' + text_ym + ')',Blockly.JavaScript.ORDER_FUNCTION_CALL];
+    };
     Blockly.JavaScript['graph_get_g'] = function (block) {
       // g variable getter.
       return ['g', Blockly.JavaScript.ORDER_ATOMIC];
@@ -467,8 +523,10 @@
     };
     window.addEventListener('load', Graph.init);
     Graph.resize = function () {
-      var width = Math.max(window.innerWidth - 146, 250);
+      var width = window.innerWidth - 146;
+      var height = window.innerHeight - 56;
       document.getElementById('blocklyDiv').style.width = width + 'px';
+      document.getElementById('blocklyDiv').style.height = height + 'px';
       Blockly.svgResize(Graph.workspace);
     };
     window.addEventListener('resize', Graph.resize);

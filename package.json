@@ -4,7 +4,7 @@
   "description": "To build it:\r ```sh\r cd path/to/this/repo\r go build\r ```\r To run it:\r ```sh\r path/to/the/executable -p<whatever port you want to have>\r ```\r This project uses FontAwesome v4.7.0 and w3.css for:\r  - spinner",
   "main": "vid.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./simple-backend.js"
   },
   "repository": {
     "type": "git",
