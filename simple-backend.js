@@ -154,7 +154,7 @@ function smart(part_img, code_, res) {
     var t = new Date();
     for (let i = 0; i < this.width; i += accel) {
       for (let j = 0; j < this.height; j += accel) {
-        n = i + j * this.width;
+        try{n = i + j * this.width;
         let sr = this.data[n * 4 + 0];
         let sg = this.data[n * 4 + 1];
         let sb = this.data[n * 4 + 2];
@@ -164,7 +164,7 @@ function smart(part_img, code_, res) {
         }
         this.data[n * 4 + 0] = r;
         this.data[n * 4 + 1] = g;
-        this.data[n * 4 + 2] = b;
+        this.data[n * 4 + 2] = b;}catch(e){}
       }
       console.log(
           'PIXEL: %s/%s (%s%%)', i + 1, this.width,
